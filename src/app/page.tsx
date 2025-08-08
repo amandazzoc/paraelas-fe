@@ -4,6 +4,7 @@ import { Alert, Card, Flex } from "antd";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
 import Paragraph from "antd/es/typography/Paragraph";
+import { CadForm } from "./components/Form";
 
 export default function Home() {
   return (
@@ -34,7 +35,7 @@ export default function Home() {
         </Flex>
       </Flex>
     </Card>
- =
+    <CadForm />
   </Flex>
   );
 }
