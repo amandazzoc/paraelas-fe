@@ -3,3 +3,7 @@
   min-height: 100vh;
   padding: 16px;
 }
+
+:global(.anticon-info-circle.ant-alert-icon) {
+  color: #a823d2;
+}
