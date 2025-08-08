@@ -1,7 +1,17 @@
 "use client";
-import { Alert, Button, Card, Checkbox, Flex, Form, Input, Radio, Upload } from "antd";
-import type { UploadFile } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Flex,
+  Form,
+  Input,
+  Radio,
+  Upload,
+} from "antd";
+import type { FormProps, UploadFile } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import Link from "antd/es/typography/Link";
 import Paragraph from "antd/es/typography/Paragraph";
 import { useState } from "react";
@@ -13,6 +23,17 @@ type FieldType = {
   agreeLGPD: boolean;
   adult: boolean;
   AuthorizationTerm?: UploadFile[];
+};
+
+const onFinish: FormProps<FieldType>["onFinish"] = (values: FieldType) => {
+  // Substitui AuthorizationTerm pelo File real (ou undefined)
+  const file = values.AuthorizationTerm?.[0]?.originFileObj;
+  const newValues = { ...values, AuthorizationTerm: file };
+  console.log("Form values:", newValues);
+};
+
+const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
+  console.log("Failed:", errorInfo);
 };
 
 export function CadForm() {
@@ -37,6 +58,9 @@ export function CadForm() {
       initialValues={{ remember: true }}
       layout="vertical"
       onValuesChange={handleValuesChange}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      autoComplete="off"
     >
       <Card style={{ marginBottom: 16 }}>
         <Form.Item<FieldType>
@@ -145,7 +169,9 @@ export function CadForm() {
               label="Envie o Termo de Autorização assinado aqui."
               name="AuthorizationTerm"
               valuePropName="fileList"
-              getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
+              getValueFromEvent={(e) =>
+                Array.isArray(e) ? e : e && e.fileList
+              }
               rules={[
                 {
                   required: true,
