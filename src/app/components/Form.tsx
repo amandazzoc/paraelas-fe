@@ -20,7 +20,7 @@ export function CadForm() {
 
   return (
         <Form form={form} name="cadForm" initialValues={{ remember: true }} layout="vertical">
-            <Card style={{ width: "50rem", marginBottom: 16 }}>
+            <Card style={{marginBottom: 16 }}>
                 <Form.Item<FieldType>
                     label="E-mail"
                     name="email"
@@ -39,11 +39,12 @@ export function CadForm() {
                     label="WhatsApp"
                     name="whatsapp"
                     rules={[{ required: true, message: "Por favor, insira seu WhatsApp!" }]}
+                    style={{ marginBottom: 0 }}
                 >
                     <Input />
                 </Form.Item>
             </Card>
-            <Card style={{ width: "50rem", marginBottom: 16 }}>
+            <Card style={{ width: "100%", maxWidth: "800px", marginBottom: 16 }}>
                 <div style={{ marginBottom: 16 }}>
                     <Link
                         href="https://www.gov.br/mds/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados/lgpd"
@@ -59,11 +60,12 @@ export function CadForm() {
                     rules={[
                         { required: true, message: "Por favor, aceite os termos de LGPD!" },
                     ]}
+                    style={{ marginBottom: 0 }}
                 >
                     <Checkbox>Eu li e aceito os termos de LGPD</Checkbox>
                 </Form.Item>
             </Card>
-            <Card style={{ width: "50rem", marginBottom: 16 }}>
+            <Card style={{ width: "100%", maxWidth: "800px", marginBottom: 16 }}>
                 <Form.Item<FieldType>
                     label="Você é maior de idade?"
                     name="adult"
@@ -73,6 +75,7 @@ export function CadForm() {
                             message: "Por favor, confirme que você é maior de idade!",
                         },
                     ]}
+                    style={{ marginBottom: 0 }}
                 >
                     <Radio.Group>
                         <Radio value={true}>Sim</Radio>
@@ -82,10 +85,10 @@ export function CadForm() {
             </Card>
             <Form.Item>
                 <Flex justify="space-between">
-                    <Button htmlType="submit" color="purple" variant="solid">
+                    <Button htmlType="submit" color="primary" variant="solid">
                         Enviar
                     </Button>
-                    <Button htmlType="button" onClick={onReset} color="purple" variant="outlined">
+                    <Button htmlType="button" onClick={onReset} color="primary" variant="outlined" style={{ backgroundColor: "transparent" }}>
                         Limpar
                     </Button>
                 </Flex>
