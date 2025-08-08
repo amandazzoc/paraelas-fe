@@ -26,7 +26,6 @@ type FieldType = {
 };
 
 const onFinish: FormProps<FieldType>["onFinish"] = (values: FieldType) => {
-  // Substitui AuthorizationTerm pelo File real (ou undefined)
   const file = values.AuthorizationTerm?.[0]?.originFileObj;
   const newValues = { ...values, AuthorizationTerm: file };
   console.log("Form values:", newValues);
