@@ -15,9 +15,7 @@ import type { FormProps, UploadFile } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import Link from "antd/es/typography/Link";
 import Paragraph from "antd/es/typography/Paragraph";
-import QRCode from 'qrcode';
 import { useState } from "react";
-import axios from "axios";
 
 type FieldType = {
   email: string;
@@ -32,10 +30,15 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
-export function CadForm() {
+type Props = {
+  onSubmit: (values: FieldType) => void;
+  loading: boolean;
+};
+
+export function CadForm(props: Props) {
+  const { onSubmit, loading } = props;
   const [form] = Form.useForm<FieldType>();
   const [isMinor, setIsMinor] = useState<boolean | null>(null);
-  const [qr, setQr] = useState<string | null>(null);
 
   const onReset = () => {
     form.resetFields();
@@ -48,34 +51,6 @@ export function CadForm() {
     }
   };
 
-  const handleSubmit = async (values: FieldType) => {
-    const formData = new FormData();
-    formData.append("email", values.email);
-    formData.append("name", values.name);
-    formData.append("phone", values.phone);
-    formData.append("agreeLGPD", String(values.agreeLGPD));
-    formData.append("adult", String(values.adult));
-    
-    if (values.AuthorizationTerm && values.AuthorizationTerm[0]?.originFileObj) {
-      formData.append("AuthorizationTerm", values.AuthorizationTerm[0].originFileObj);
-    }
-
-    try {
-      const response = await axios.post("http://localhost:4000", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      const inscrito = response.data;
-
-      const url = `http://localhost:3000/inscrito/${inscrito._id}`;
-      const qrCode = await QRCode.toDataURL(url);
-      setQr(qrCode);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  }
-
   return (
     <Form
       form={form}
@@ -83,7 +58,7 @@ export function CadForm() {
       initialValues={{ remember: true }}
       layout="vertical"
       onValuesChange={handleValuesChange}
-      onFinish={handleSubmit}
+      onFinish={onSubmit}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
@@ -227,26 +202,12 @@ export function CadForm() {
             color="primary"
             variant="outlined"
             style={{ backgroundColor: "transparent" }}
+            loading={loading}
           >
             Limpar
           </Button>
         </Flex>
       </Form.Item>
-      {qr && (
-        <Card style={{ width: "100%", maxWidth: "600px", marginBottom: 16 }}>
-          <Alert
-            message="QR Code gerado"
-            type="success"
-            showIcon
-            style={{
-              marginBottom: 16,
-              backgroundColor: "#e6f7ff",
-              borderColor: "#91d5ff",
-            }} 
-          />
-          <img src={qr} alt="QR Code" style={{ width: "100%" }} />
-        </Card>
-      )}
     </Form>
   );
 }

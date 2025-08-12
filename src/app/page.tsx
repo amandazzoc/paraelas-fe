@@ -1,12 +1,64 @@
 /* eslint-disable @next/next/no-img-element */
+'use client'
 import styles from "./page.module.css";
-import { Alert, Card, Flex } from "antd";
+import { Alert, Card, Flex, UploadFile } from "antd";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
 import Paragraph from "antd/es/typography/Paragraph";
 import { CadForm } from "./components/Form";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import QRCode from "qrcode";
+
+type FieldType = {
+  email: string;
+  name: string;
+  phone: string;
+  agreeLGPD: boolean;
+  adult: boolean;
+  AuthorizationTerm?: UploadFile[];
+};
 
 export default function Home() {
+  const [qr, setQr] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+   const handleSubmit = async (values: FieldType) => {
+    const formData = new FormData();
+    formData.append("email", values.email);
+    formData.append("name", values.name);
+    formData.append("phone", values.phone);
+    formData.append("agreeLGPD", String(values.agreeLGPD));
+    formData.append("adult", String(values.adult));
+    
+    if (values.AuthorizationTerm && values.AuthorizationTerm[0]?.originFileObj) {
+      formData.append("AuthorizationTerm", values.AuthorizationTerm[0].originFileObj);
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post("http://localhost:4000", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const inscrito = response.data;
+
+      const url = `http://localhost:3000/inscrito/${inscrito._id}`;
+      const qrCode = await QRCode.toDataURL(url);
+      setQr(qrCode);
+      setLoading(false);
+      if (response.status === 201) {
+        router.push("/sucesso")
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setLoading(false);
+    }
+  }
+
   return (
     <Flex
       align="center"
@@ -58,7 +110,7 @@ export default function Home() {
           </Flex>
         </Flex>
       </Card>
-      <CadForm />
+      <CadForm onSubmit={handleSubmit} loading={loading} />
     </Flex>
   );
 }
