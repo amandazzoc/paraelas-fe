@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import {
   Alert,
@@ -14,6 +15,7 @@ import type { FormProps, UploadFile } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import Link from "antd/es/typography/Link";
 import Paragraph from "antd/es/typography/Paragraph";
+import QRCode from 'qrcode';
 import { useState } from "react";
 
 type FieldType = {
@@ -25,12 +27,6 @@ type FieldType = {
   AuthorizationTerm?: UploadFile[];
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values: FieldType) => {
-  const file = values.AuthorizationTerm?.[0]?.originFileObj;
-  const newValues = { ...values, AuthorizationTerm: file };
-  console.log("Form values:", newValues);
-};
-
 const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
@@ -38,6 +34,7 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 export function CadForm() {
   const [form] = Form.useForm<FieldType>();
   const [isMinor, setIsMinor] = useState<boolean | null>(null);
+  const [qr, setQr] = useState<string | null>(null);
 
   const onReset = () => {
     form.resetFields();
@@ -50,6 +47,18 @@ export function CadForm() {
     }
   };
 
+  const handleSubmit = async (values: FieldType) => {
+    const file = values.AuthorizationTerm?.[0]?.originFileObj;
+    const newValues = { ...values, AuthorizationTerm: file };
+    console.log("Form values:", newValues);
+
+    const id = crypto.randomUUID();
+    const url = `https://localhost:3000/inscrito/${id}`;
+
+    const qrCode = await QRCode.toDataURL(url);
+    setQr(qrCode);
+  }
+
   return (
     <Form
       form={form}
@@ -57,7 +66,7 @@ export function CadForm() {
       initialValues={{ remember: true }}
       layout="vertical"
       onValuesChange={handleValuesChange}
-      onFinish={onFinish}
+      onFinish={handleSubmit}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
@@ -206,6 +215,21 @@ export function CadForm() {
           </Button>
         </Flex>
       </Form.Item>
+      {qr && (
+        <Card style={{ width: "100%", maxWidth: "600px", marginBottom: 16 }}>
+          <Alert
+            message="QR Code gerado"
+            type="success"
+            showIcon
+            style={{
+              marginBottom: 16,
+              backgroundColor: "#e6f7ff",
+              borderColor: "#91d5ff",
+            }} 
+          />
+          <img src={qr} alt="QR Code" style={{ width: "100%" }} />
+        </Card>
+      )}
     </Form>
   );
 }
