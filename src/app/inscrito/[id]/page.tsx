@@ -111,7 +111,7 @@ export default function InscritoPage({ params }: Props) {
                   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 }}
               >
-                <PdfViewer url={`http://localhost:4000/uploads/1755001855545.pdf`} />
+                <PdfViewer url={`http://localhost:4000/${inscritoData.AuthorizationTerm}`} />
               </div>
             )}
           </Space>
