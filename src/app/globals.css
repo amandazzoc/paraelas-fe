@@ -33,3 +33,7 @@ a {
     color-scheme: dark;
   }
 }
+
+:global(.anticon-info-circle.ant-alert-icon) {
+  color: #a823d2;
+}

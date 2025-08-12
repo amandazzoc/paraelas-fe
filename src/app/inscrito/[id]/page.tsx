@@ -1,19 +1,16 @@
-"use client";
+'use client'
 import React, { useEffect, useState } from "react";
 import styles from "@/app/page.module.css";
 import { Card, Flex, Space, Skeleton, Typography, Alert } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 
 const { Title, Text } = Typography;
 
 const PdfViewer = dynamic(() => import("@/app/components/PdfViewer"), {
   ssr: false,
 });
-
-interface Props {
-  params: { id: string };
-}
 
 type FieldType = {
   email: string;
@@ -32,8 +29,8 @@ async function getInscritoData(id: string): Promise<FieldType> {
   return response.data;
 }
 
-export default function InscritoPage({ params }: Props) {
-  const { id } = params;
+export default function InscritoPage() {
+  const { id } = useParams<{ id: string }>();
   const [inscritoData, setInscritoData] = useState<FieldType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
