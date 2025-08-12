@@ -10,7 +10,7 @@ import {
   Radio,
   Upload,
 } from "antd";
-import type { FormProps, UploadFile } from "antd";
+import type { UploadFile } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import Link from "antd/es/typography/Link";
 import Paragraph from "antd/es/typography/Paragraph";
@@ -25,17 +25,18 @@ type FieldType = {
   AuthorizationTerm?: UploadFile[];
 };
 
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+const requiredRule = (msg: string) => ({ required: true, message: msg });
 
-type Props = {
-  onSubmit: (values: FieldType) => void;
-  loading: boolean;
-};
+const textFields: { label: keyof FieldType; message: string }[] = [
+  { label: "email", message: "Por favor, insira seu e-mail!" },
+  { label: "name", message: "Por favor, insira seu nome!" },
+  { label: "phone", message: "Por favor, insira seu WhatsApp!" },
+];
 
-export function CadForm(props: Props) {
-  const { onSubmit, loading } = props;
+const cardStyle = { marginBottom: 16 };
+const maxWidthStyle = { width: "610px", marginBottom: 16 };
+
+export function CadForm({ onSubmit, loading }: { onSubmit: (values: FieldType) => void; loading: boolean }) {
   const [form] = Form.useForm<FieldType>();
   const [isMinor, setIsMinor] = useState<boolean | null>(null);
 
@@ -44,50 +45,33 @@ export function CadForm(props: Props) {
     setIsMinor(null);
   };
 
-  const handleValuesChange = (changedValues: Partial<FieldType>) => {
-    if (changedValues.adult !== undefined) {
-      setIsMinor(changedValues.adult === false);
-    }
+  const onValuesChange = (changedValues: Partial<FieldType>) => {
+    if (changedValues.adult !== undefined) setIsMinor(changedValues.adult === false);
   };
 
   return (
     <Form
       form={form}
       name="cadForm"
-      initialValues={{ remember: true }}
       layout="vertical"
-      onValuesChange={handleValuesChange}
+      onValuesChange={onValuesChange}
       onFinish={onSubmit}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-      <Card style={{ marginBottom: 16 }}>
-        <Form.Item<FieldType>
-          label="E-mail"
-          name="email"
-          rules={[{ required: true, message: "Por favor, insira seu e-mail!" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item<FieldType>
-          label="Nome"
-          name="name"
-          rules={[{ required: true, message: "Por favor, insira seu nome!" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item<FieldType>
-          label="WhatsApp"
-          name="phone"
-          rules={[
-            { required: true, message: "Por favor, insira seu WhatsApp!" },
-          ]}
-          style={{ marginBottom: 0 }}
-        >
-          <Input />
-        </Form.Item>
+      <Card style={cardStyle}>
+        {textFields.map(({ label, message }) => (
+          <Form.Item<FieldType>
+            key={label}
+            label={label.charAt(0).toUpperCase() + label.slice(1)}
+            name={label}
+            rules={[requiredRule(message)]}
+          >
+            <Input />
+          </Form.Item>
+        ))}
       </Card>
-      <Card style={{ width: "100%", maxWidth: "800px", marginBottom: 16 }}>
+
+      <Card style={maxWidthStyle}>
         <div style={{ marginBottom: 16 }}>
           <Link
             href="https://www.gov.br/mds/pt-br/acesso-a-informacao/privacidade-e-protecao-de-dados/lgpd"
@@ -97,28 +81,19 @@ export function CadForm(props: Props) {
           </Link>
         </div>
         <Form.Item<FieldType>
-          label="Concorda com o envio dos dados, atendendo à LGPD (Lei Geral de Proteção de Dados)"
           name="agreeLGPD"
           valuePropName="checked"
-          rules={[
-            { required: true, message: "Por favor, aceite os termos de LGPD!" },
-          ]}
-          style={{ marginBottom: 0 }}
+          rules={[requiredRule("Por favor, aceite os termos de LGPD!")]}
         >
           <Checkbox>Eu li e aceito os termos de LGPD</Checkbox>
         </Form.Item>
       </Card>
-      <Card style={{ width: "100%", maxWidth: "800px", marginBottom: 16 }}>
+
+      <Card style={maxWidthStyle}>
         <Form.Item<FieldType>
           label="Você é maior de idade?"
           name="adult"
-          rules={[
-            {
-              required: true,
-              message: "Por favor, confirme que você é maior de idade!",
-            },
-          ]}
-          style={{ marginBottom: 0 }}
+          rules={[requiredRule("Por favor, confirme que você é maior de idade!")]}
         >
           <Radio.Group>
             <Radio value={true}>Sim</Radio>
@@ -126,29 +101,18 @@ export function CadForm(props: Props) {
           </Radio.Group>
         </Form.Item>
       </Card>
+
       {isMinor && (
         <>
-          <Card
-            style={{
-              width: "100%",
-              maxWidth: "600px",
-              marginBottom: 16,
-            }}
-          >
+          <Card style={{ ...maxWidthStyle }}>
             <Alert
               message="Termo de Autorização"
               type="info"
               showIcon
-              style={{
-                marginBottom: 16,
-                backgroundColor: "#f6e9fb",
-                borderColor: "#d3b2e0",
-              }}
+              style={{ marginBottom: 16, backgroundColor: "#f6e9fb", borderColor: "#d3b2e0" }}
             />
             <Paragraph>
-              Se você for menor de idade, peça aos seus pais ou responsáveis
-              para que assine o Termo de Autorização do link abaixo e faça o
-              envio do arquivo assinado
+              Se você for menor de idade, peça aos seus pais ou responsáveis para que assine o Termo de Autorização no link abaixo e faça o envio do arquivo assinado.
             </Paragraph>
             <Link
               href="https://drive.google.com/file/d/1alHiffZi2g0f6bR130-669hTN0z_NdLi/view?usp=sharing"
@@ -157,52 +121,29 @@ export function CadForm(props: Props) {
               PDF Termo de Autorização
             </Link>
           </Card>
-          <Card
-            style={{
-              width: "100%",
-              maxWidth: "600px",
-              marginBottom: 16,
-            }}
-          >
+
+          <Card style={{ ...maxWidthStyle }}>
             <Form.Item<FieldType>
               label="Envie o Termo de Autorização assinado aqui."
               name="AuthorizationTerm"
               valuePropName="fileList"
-              getValueFromEvent={(e) =>
-                Array.isArray(e) ? e : e && e.fileList
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor, envie o Termo de Autorização!",
-                },
-              ]}
+              getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+              rules={[requiredRule("Por favor, envie o Termo de Autorização!")]}
             >
-              <Upload
-                name="file"
-                listType="text"
-                maxCount={1}
-                accept=".pdf,image/*"
-              >
+              <Upload name="file" listType="text" maxCount={1} accept=".pdf,image/*">
                 <Button icon={<UploadOutlined />}>Enviar termo assinado</Button>
               </Upload>
             </Form.Item>
           </Card>
         </>
       )}
+
       <Form.Item>
         <Flex justify="space-between">
-          <Button htmlType="submit" color="primary" variant="solid">
+          <Button htmlType="submit" type="primary" loading={loading}>
             Enviar
           </Button>
-          <Button
-            htmlType="button"
-            onClick={onReset}
-            color="primary"
-            variant="outlined"
-            style={{ backgroundColor: "transparent" }}
-            loading={loading}
-          >
+          <Button htmlType="button" onClick={onReset} type="default" ghost>
             Limpar
           </Button>
         </Flex>

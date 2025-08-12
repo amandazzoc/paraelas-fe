@@ -12,6 +12,7 @@
     "@ant-design/nextjs-registry": "^1.1.0",
     "antd": "^5.26.7",
     "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
     "next": "15.4.6",
     "pdf-viewer-reactjs": "^2.2.3",
     "pdfjs-dist": "^5.4.54",
