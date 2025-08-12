@@ -50,8 +50,13 @@ export default function Home() {
       const qrCode = await QRCode.toDataURL(url);
       setQr(qrCode);
       setLoading(false);
+      
       if (response.status === 201) {
         router.push("/sucesso")
+      }
+
+      if (response.status === 409) {
+        alert("Email já cadastrado");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
