@@ -60,19 +60,17 @@ export function CadForm() {
       formData.append("AuthorizationTerm", values.AuthorizationTerm[0].originFileObj);
     }
 
-    const id = crypto.randomUUID();
-    const url = `https://localhost:3000/inscrito/${id}`;
-
-    const qrCode = await QRCode.toDataURL(url);
-    setQr(qrCode);
-
     try {
       const response = await axios.post("http://localhost:4000", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log("Response:", response.data);
+      const inscrito = response.data;
+
+      const url = `http://localhost:3000/inscrito/${inscrito._id}`;
+      const qrCode = await QRCode.toDataURL(url);
+      setQr(qrCode);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
