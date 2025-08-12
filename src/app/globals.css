@@ -34,6 +34,6 @@ a {
   }
 }
 
-:global(.anticon-info-circle.ant-alert-icon) {
+.anticon-info-circle.ant-alert-icon {
   color: #a823d2;
 }
