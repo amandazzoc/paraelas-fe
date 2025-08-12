@@ -17,11 +17,12 @@ import Link from "antd/es/typography/Link";
 import Paragraph from "antd/es/typography/Paragraph";
 import QRCode from 'qrcode';
 import { useState } from "react";
+import axios from "axios";
 
 type FieldType = {
   email: string;
   name: string;
-  whatsapp: string;
+  phone: string;
   agreeLGPD: boolean;
   adult: boolean;
   AuthorizationTerm?: UploadFile[];
@@ -48,15 +49,33 @@ export function CadForm() {
   };
 
   const handleSubmit = async (values: FieldType) => {
-    const file = values.AuthorizationTerm?.[0]?.originFileObj;
-    const newValues = { ...values, AuthorizationTerm: file };
-    console.log("Form values:", newValues);
+    const formData = new FormData();
+    formData.append("email", values.email);
+    formData.append("name", values.name);
+    formData.append("phone", values.phone);
+    formData.append("agreeLGPD", String(values.agreeLGPD));
+    formData.append("adult", String(values.adult));
+    
+    if (values.AuthorizationTerm && values.AuthorizationTerm[0]?.originFileObj) {
+      formData.append("AuthorizationTerm", values.AuthorizationTerm[0].originFileObj);
+    }
 
     const id = crypto.randomUUID();
     const url = `https://localhost:3000/inscrito/${id}`;
 
     const qrCode = await QRCode.toDataURL(url);
     setQr(qrCode);
+
+    try {
+      const response = await axios.post("http://localhost:4000", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   }
 
   return (
@@ -87,7 +106,7 @@ export function CadForm() {
         </Form.Item>
         <Form.Item<FieldType>
           label="WhatsApp"
-          name="whatsapp"
+          name="phone"
           rules={[
             { required: true, message: "Por favor, insira seu WhatsApp!" },
           ]}
