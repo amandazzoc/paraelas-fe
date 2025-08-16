@@ -166,7 +166,7 @@ export function CadForm(props: Props) {
         )}
         <Form.Item>
           <Flex justify="space-between">
-            <Button htmlType="submit" color="primary" variant="solid">
+            <Button htmlType="submit" color="primary" variant="solid" loading={loading} disabled={loading}>
               Enviar
             </Button>
             <Button
@@ -175,7 +175,7 @@ export function CadForm(props: Props) {
               color="primary"
               variant="outlined"
               style={{ backgroundColor: "transparent" }}
-              loading={loading}
+              disabled={loading}
             >
               Limpar
             </Button>
