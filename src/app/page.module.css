@@ -1,4 +1,34 @@
 .page{
   min-height: 100vh;
-  padding: 16px;
+  padding: 1.6rem 19rem
+}
+
+.header {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.marginBottom {
+  margin-bottom: 16px;
+}
+
+.pdf {
+  margin-top: 24px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  overflow: auto;
+  max-height: 100vh;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  width: 100%;
+  max-width: 100%;
+}
+
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1.6rem 1rem;
+  }
+
 }
