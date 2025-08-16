@@ -1,26 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import styles from "./page.module.css";
-import { Card, Flex, UploadFile, message } from "antd";
+import { Card, Flex, message, Skeleton } from "antd";
 import { CadForm } from "./components/Form";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderCard } from "./components/HeaderCard";
-
-type FieldType = {
-  email: string;
-  name: string;
-  phone: string;
-  agreeLGPD: boolean;
-  adult: boolean;
-  AuthorizationTerm?: UploadFile[];
-};
+import { FieldType } from "@/types/formTypes";
 
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [hydrated, setHydrated] = useState(false);
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const handleSubmit = async (values: FieldType) => {
     const formData = new FormData();
@@ -53,6 +50,14 @@ export default function Home() {
     }
   };
 
+  if(!hydrated) {
+    return(
+      <Flex justify="center" align="center" className={styles.page}>
+        <Skeleton active />
+      </Flex>
+    )
+  }
+
   return (
     <>
       {contextHolder}
@@ -61,17 +66,16 @@ export default function Home() {
         justify="center"
         className={styles.page}
         vertical
-        gap={5}
+        gap={16}
       >
         <Card
           cover={
             <img
               alt="example"
               src="/cover.jpg"
-              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+              className={styles.header}
             />
           }
-          style={{ width: "100%", maxWidth: "610px", marginBottom: 16 }}
         >
           <HeaderCard />
         </Card>

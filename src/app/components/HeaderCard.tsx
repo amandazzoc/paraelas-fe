@@ -6,7 +6,7 @@ import Text from "antd/es/typography/Text";
 export function HeaderCard() {
   return (
     <Flex vertical>
-      <Title level={2}>Para Elas - Evento de Tecnologia para Mulheres</Title>
+      <Title level={3}>Para Elas - Evento de Tecnologia para Mulheres</Title>
       <Title level={5} style={{ marginTop: 0 }}>
         Bem-vinda ao &quot;Para Elas&quot; - Evento de Tecnologia para Mulheres!
       </Title>

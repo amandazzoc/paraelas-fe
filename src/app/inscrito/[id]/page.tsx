@@ -5,6 +5,7 @@ import { Card, Flex, Space, Skeleton, Typography, Alert } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+import { FieldInscribedType } from "@/types/formTypes";
 
 const { Title, Text } = Typography;
 
@@ -12,16 +13,7 @@ const PdfViewer = dynamic(() => import("@/app/components/PdfViewer"), {
   ssr: false,
 });
 
-type FieldType = {
-  email: string;
-  name: string;
-  phone: string;
-  agreeLGPD: boolean;
-  adult: boolean;
-  AuthorizationTerm?: string;
-};
-
-async function getInscritoData(id: string): Promise<FieldType> {
+async function getInscritoData(id: string): Promise<FieldInscribedType> {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/${id}`);
   if (response.status !== 200) {
     throw new Error("Erro ao buscar os dados do inscrito");
@@ -31,7 +23,7 @@ async function getInscritoData(id: string): Promise<FieldType> {
 
 export default function InscritoPage() {
   const { id } = useParams<{ id: string }>();
-  const [inscritoData, setInscritoData] = useState<FieldType | null>(null);
+  const [inscritoData, setInscritoData] = useState<FieldInscribedType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,15 +74,15 @@ export default function InscritoPage() {
       vertical
       gap={5}
     >
-      <Card style={{ marginBottom: 16, width: "100%", maxWidth: 610 }}>
+      <Card>
         <Title level={3} style={{ marginBottom: 24, textAlign: "center" }}>
           Detalhes do Inscrito
         </Title>
-        <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-          <b>ID:</b> {id}
-        </Text>
 
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+          <Text type="secondary" style={{ display: "block"}}>
+          <b>ID:</b> {id}
+        </Text>
           {infoFields.map(({ label, value }) => (
             <Flex gap={1} key={label}>
               <Text strong style={{ minWidth: 110 }}>
@@ -101,18 +93,9 @@ export default function InscritoPage() {
           ))}
 
           {inscritoData?.AuthorizationTerm && (
-            <div
-              style={{
-                marginTop: 24,
-                border: "1px solid #d9d9d9",
-                borderRadius: 8,
-                overflow: "auto",
-                maxHeight: 700,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              }}
-            >
+            <div className={styles.pdf}>
               <PdfViewer
-                url={`${process.env.NEXT_PUBLIC_API_URL}/${inscritoData.AuthorizationTerm}`}
+                url={`${inscritoData.AuthorizationTerm}`}
               />
             </div>
           )}
